@@ -122,7 +122,6 @@ name = "allocator"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
- "solana-program",
 ]
 
 [[package]]
@@ -5468,7 +5467,6 @@ dependencies = [
  "allocator",
  "anchor-client",
  "anchor-lang",
- "solana-program",
  "solana-program-test",
 ]
 
