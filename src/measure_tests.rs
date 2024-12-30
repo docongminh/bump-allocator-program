@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::{mem, ptr, sync::Arc, thread, time::Instant};
 
 use crate::{allocator::BumpAllocator, multi_thread_allocator::ThreadSafeBumpAllocator};
@@ -9,7 +10,9 @@ struct LargeData {
 }
 
 /// Test allocating varying sizes: u8, u64, and LargeStruct.
-fn test_varying_allocation_sizes() {
+pub fn measure_varying_allocation_sizes() {
+    println!("\n /////////////// Measure varying allocation sizes ////////////// \n");
+
     let num_allocations = 100_000;
 
     // Define different types to allocate
@@ -18,7 +21,7 @@ fn test_varying_allocation_sizes() {
     for typ in types {
         match typ {
             "u8" => {
-                println!("Testing allocation of u8...");
+                println!("{}", format!("Measure u8...").purple().italic());
                 // Bump Allocator
                 let size = mem::size_of::<u8>();
                 let align = mem::align_of::<u8>();
@@ -38,8 +41,10 @@ fn test_varying_allocation_sizes() {
 
                 let duration = start.elapsed();
                 println!(
-                    "Bump Allocator: Allocated {} u8s in {:?}",
-                    num_allocations, duration
+                    "{}: allocated {} u8s in {}",
+                    format!("Bump Allocator").blue(),
+                    num_allocations.to_string().green(),
+                    format!("{:?}", duration).bold().green()
                 );
 
                 // Standard Allocator
@@ -53,21 +58,23 @@ fn test_varying_allocation_sizes() {
 
                 let duration = start.elapsed();
                 println!(
-                    "Standard Allocator: Allocated {} u8s in {:?}",
-                    num_allocations, duration
+                    "{}: Allocated {} u8s in {}",
+                    format!("Standard Allocator").blue(),
+                    num_allocations.to_string().green(),
+                    format!("{:?}", duration).bold().green()
                 );
 
                 // Cleanup
                 for ptr in std_allocations {
                     unsafe {
-                        Box::from_raw(ptr);
+                        let _ = Box::from_raw(ptr);
                     }
                 }
 
-                println!("----------------------------------------");
+                println!("\n");
             }
             "u64" => {
-                println!("Testing allocation of u64...");
+                println!("{}", format!("Measure u64...").purple().italic());
                 // Bump Allocator
                 let size = mem::size_of::<u64>();
                 let align = mem::align_of::<u64>();
@@ -87,8 +94,10 @@ fn test_varying_allocation_sizes() {
 
                 let duration = start.elapsed();
                 println!(
-                    "Bump Allocator: Allocated {} u64s in {:?}",
-                    num_allocations, duration
+                    "{}: Allocated {} u64s in {}",
+                    format!("Bump Allocator").blue(),
+                    num_allocations.to_string().green(),
+                    format!("{:?}", duration).bold().green()
                 );
 
                 // Standard Allocator
@@ -102,21 +111,24 @@ fn test_varying_allocation_sizes() {
 
                 let duration = start.elapsed();
                 println!(
-                    "Standard Allocator: Allocated {} u64s in {:?}",
-                    num_allocations, duration
+                    "{}: Allocated {} u64s in {}",
+                    format!("Standard Allocator").blue(),
+                    num_allocations.to_string().green(),
+                    format!("{:?}", duration).bold().green()
                 );
 
                 // Cleanup
                 for ptr in std_allocations {
                     unsafe {
-                        Box::from_raw(ptr);
+                        let _ = Box::from_raw(ptr);
                     }
                 }
 
-                println!("----------------------------------------");
+                println!("\n");
             }
-            "LargeStruct" => {
-                println!("Testing allocation of LargeStruct...");
+            "LargeData" => {
+                println!("{}", format!("Measure LargeData...").purple().italic());
+                
                 // Bump Allocator
                 let size = mem::size_of::<LargeData>();
                 let align = mem::align_of::<LargeData>();
@@ -136,8 +148,9 @@ fn test_varying_allocation_sizes() {
 
                 let duration = start.elapsed();
                 println!(
-                    "Bump Allocator: Allocated {} LargeStructs in {:?}",
-                    num_allocations, duration
+                    "Bump Allocator: Allocated {} LargeData in {}",
+                    num_allocations.to_string().green(),
+                    format!("{:?}", duration).bold().green()
                 );
 
                 // Standard Allocator
@@ -151,18 +164,17 @@ fn test_varying_allocation_sizes() {
 
                 let duration = start.elapsed();
                 println!(
-                    "Standard Allocator: Allocated {} LargeStructs in {:?}",
-                    num_allocations, duration
+                    "Standard Allocator: Allocated {} LargeData in {}",
+                    num_allocations.to_string().green(),
+                    format!("{:?}", duration).bold().green()
                 );
 
                 // Cleanup
                 for ptr in std_allocations {
                     unsafe {
-                        Box::from_raw(ptr);
+                        let _ = Box::from_raw(ptr);
                     }
                 }
-
-                println!("----------------------------------------");
             }
             _ => {}
         }
@@ -170,12 +182,13 @@ fn test_varying_allocation_sizes() {
 }
 
 /// Test allocating and resetting the bump allocator multiple times.
-fn test_allocation_and_reset_patterns() {
-    println!("Testing allocation and reset patterns...");
+pub fn measure_allocation_and_reset_patterns() {
+    println!("\n /////////////// Measure allocation and reset patterns ////////////// \n");
     let num_allocations = 500_000;
     let iterations = 10;
 
     // Bump Allocator
+    println!("==== MEASURE BUMP ALLOCATOR ====");
     let size = mem::size_of::<u64>();
     let align = mem::align_of::<u64>();
     let buffer_size = num_allocations * size * 2;
@@ -197,7 +210,7 @@ fn test_allocation_and_reset_patterns() {
 
         let duration = start.elapsed();
         println!(
-            "Bump Allocator: Iteration {} - Allocated {} u64s in {:?}",
+            "Iteration {} - Allocated {} u64s in {:?}",
             iter + 1,
             num_allocations,
             duration
@@ -208,11 +221,15 @@ fn test_allocation_and_reset_patterns() {
 
     let total_duration = total_start.elapsed();
     println!(
-        "Bump Allocator: Total time for {} iterations: {:?}",
-        iterations, total_duration
+        "Total time for {} with {} iterations: {}",
+        format!("BUMP ALLOCATOR").purple(),
+        iterations.to_string().bold().green(),
+        format!("{:?}", total_duration).bold().green()
     );
 
+    println!("\n");
     // Standard Allocator
+    println!("==== MEASURE STANADARD ALLOCATOR ====");
     let mut std_allocations: Vec<*mut u64> = Vec::with_capacity(num_allocations * iterations);
 
     let total_start = Instant::now();
@@ -227,7 +244,7 @@ fn test_allocation_and_reset_patterns() {
 
         let duration = start.elapsed();
         println!(
-            "Standard Allocator: Iteration {} - Allocated {} u64s in {:?}",
+            "Iteration {} - Allocated {} u64s in {:?}",
             iter + 1,
             num_allocations,
             duration
@@ -236,201 +253,201 @@ fn test_allocation_and_reset_patterns() {
 
     let total_duration = total_start.elapsed();
     println!(
-        "Standard Allocator: Total time for {} iterations: {:?}",
-        iterations, total_duration
+        "Total time for {} with {} iterations: {}",
+        format!("STANDARD ALLOCATOR").purple(),
+        iterations.to_string().bold().green(),
+        format!("{:?}", total_duration).bold().green()
     );
 
     // Cleanup
     for ptr in std_allocations {
         unsafe {
-            Box::from_raw(ptr);
+            let _ = Box::from_raw(ptr);
         }
     }
-
-    println!("----------------------------------------");
 }
 
-/// Test multithreaded allocations using ThreadSafeBumpAllocator and standard allocator.
-fn test_multithreaded_allocations() {
-    println!("Testing multithreaded allocations...");
-    let num_threads = 8;
-    let num_allocations_per_thread = 100_000;
+// /// Test multithreaded allocations using ThreadSafeBumpAllocator and standard allocator.
+// fn test_multithreaded_allocations() {
+//     println!("Testing multithreaded allocations...");
+//     let num_threads = 8;
+//     let num_allocations_per_thread = 100_000;
 
-    // Thread-safe Bump Allocator
-    let size = mem::size_of::<u64>();
-    let align = mem::align_of::<u64>();
-    let buffer_size = num_threads * num_allocations_per_thread * size * 2;
-    let allocator = Arc::new(ThreadSafeBumpAllocator::new(buffer_size));
+//     // Thread-safe Bump Allocator
+//     let size = mem::size_of::<u64>();
+//     let align = mem::align_of::<u64>();
+//     let buffer_size = num_threads * num_allocations_per_thread * size * 2;
+//     let allocator = Arc::new(ThreadSafeBumpAllocator::new(buffer_size));
 
-    let start = Instant::now();
+//     let start = Instant::now();
 
-    let mut handles = Vec::new();
+//     let mut handles = Vec::new();
 
-    for _ in 0..num_threads {
-        let alloc_ref = Arc::clone(&allocator);
-        let handle = thread::spawn(move || {
-            let mut local_allocations: Vec<*mut u64> = Vec::with_capacity(num_allocations_per_thread);
-            for i in 0..num_allocations_per_thread {
-                let ptr = alloc_ref.allocate(size, align) as *mut u64;
-                unsafe {
-                    ptr::write(ptr, i as u64);
-                }
-                local_allocations.push(ptr);
-            }
-            local_allocations
-        });
-        handles.push(handle);
-    }
+//     for _ in 0..num_threads {
+//         let alloc_ref = Arc::clone(&allocator);
+//         let handle = thread::spawn(move || {
+//             let mut local_allocations: Vec<*mut u64> = Vec::with_capacity(num_allocations_per_thread);
+//             for i in 0..num_allocations_per_thread {
+//                 let ptr = alloc_ref.allocate(size, align) as *mut u64;
+//                 unsafe {
+//                     ptr::write(ptr, i as u64);
+//                 }
+//                 local_allocations.push(ptr);
+//             }
+//             local_allocations
+//         });
+//         handles.push(handle);
+//     }
 
-    let mut all_allocations = Vec::with_capacity(num_threads * num_allocations_per_thread);
+//     let mut all_allocations = Vec::with_capacity(num_threads * num_allocations_per_thread);
 
-    for handle in handles {
-        let mut thread_allocations = handle.join().unwrap();
-        all_allocations.append(&mut thread_allocations);
-    }
+//     for handle in handles {
+//         let mut thread_allocations = handle.join().unwrap();
+//         all_allocations.append(&mut thread_allocations);
+//     }
 
-    let duration = start.elapsed();
-    println!(
-        "ThreadSafe Bump Allocator: Allocated {} u64s across {} threads in {:?}",
-        num_threads * num_allocations,
-        num_threads,
-        duration
-    );
+//     let duration = start.elapsed();
+//     println!(
+//         "ThreadSafe Bump Allocator: Allocated {} u64s across {} threads in {:?}",
+//         num_threads * num_allocations,
+//         num_threads,
+//         duration
+//     );
 
-    allocator.reset();
+//     allocator.reset();
 
-    // Standard Allocator
-    let start = Instant::now();
+//     // Standard Allocator
+//     let start = Instant::now();
 
-    let mut handles = Vec::new();
+//     let mut handles = Vec::new();
 
-    for _ in 0..num_threads {
-        let handle = thread::spawn(move || {
-            let mut local_allocations: Vec<*mut u64> = Vec::with_capacity(num_allocations);
-            for i in 0..num_allocations {
-                let boxed = Box::new(i as u64);
-                local_allocations.push(Box::into_raw(boxed));
-            }
-            local_allocations
-        });
-        handles.push(handle);
-    }
+//     for _ in 0..num_threads {
+//         let handle = thread::spawn(move || {
+//             let mut local_allocations: Vec<*mut u64> = Vec::with_capacity(num_allocations);
+//             for i in 0..num_allocations {
+//                 let boxed = Box::new(i as u64);
+//                 local_allocations.push(Box::into_raw(boxed));
+//             }
+//             local_allocations
+//         });
+//         handles.push(handle);
+//     }
 
-    let mut all_std_allocations = Vec::with_capacity(num_threads * num_allocations);
+//     let mut all_std_allocations = Vec::with_capacity(num_threads * num_allocations);
 
-    for handle in handles {
-        let mut thread_allocations = handle.join().unwrap();
-        all_std_allocations.append(&mut thread_allocations);
-    }
+//     for handle in handles {
+//         let mut thread_allocations = handle.join().unwrap();
+//         all_std_allocations.append(&mut thread_allocations);
+//     }
 
-    let duration = start.elapsed();
-    println!(
-        "Standard Allocator: Allocated {} u64s across {} threads in {:?}",
-        num_threads * num_allocations,
-        num_threads,
-        duration
-    );
+//     let duration = start.elapsed();
+//     println!(
+//         "Standard Allocator: Allocated {} u64s across {} threads in {:?}",
+//         num_threads * num_allocations,
+//         num_threads,
+//         duration
+//     );
 
-    // Cleanup
-    for ptr in all_std_allocations {
-        unsafe {
-            Box::from_raw(ptr);
-        }
-    }
+//     // Cleanup
+//     for ptr in all_std_allocations {
+//         unsafe {
+//             Box::from_raw(ptr);
+//         }
+//     }
 
-    println!("----------------------------------------");
-}
+//     println!("----------------------------------------");
+// }
 
-/// Test the bump allocator and standard allocator under stress by allocating until memory is exhausted.
-fn test_stress_allocations() {
-    println!("Testing stress allocations...");
-    // Adjust these numbers based on your system's memory
-    let allocation_size = mem::size_of::<u64>();
-    let align = mem::align_of::<u64>();
-    let buffer_size = 10 * 1024 * 1024; // 10 MB
+// /// Test the bump allocator and standard allocator under stress by allocating until memory is exhausted.
+// fn test_stress_allocations() {
+//     println!("Testing stress allocations...");
+//     // Adjust these numbers based on your system's memory
+//     let allocation_size = mem::size_of::<u64>();
+//     let align = mem::align_of::<u64>();
+//     let buffer_size = 10 * 1024 * 1024; // 10 MB
 
-    // Bump Allocator
-    let allocator = BumpAllocator::new(buffer_size);
-    let mut allocations: Vec<*mut u64> = Vec::new();
-    let start = Instant::now();
+//     // Bump Allocator
+//     let allocator = BumpAllocator::new(buffer_size);
+//     let mut allocations: Vec<*mut u64> = Vec::new();
+//     let start = Instant::now();
 
-    println!("Starting stress test for Bump Allocator...");
+//     println!("Starting stress test for Bump Allocator...");
 
-    loop {
-        if allocations.len() % 100_000 == 0 && allocations.len() != 0 {
-            println!(
-                "Bump Allocator: Allocated {} u64s so far...",
-                allocations.len()
-            );
-        }
+//     loop {
+//         if allocations.len() % 100_000 == 0 && allocations.len() != 0 {
+//             println!(
+//                 "Bump Allocator: Allocated {} u64s so far...",
+//                 allocations.len()
+//             );
+//         }
 
-        let ptr = match std::panic::catch_unwind(|| allocator.allocate(allocation_size, align)) {
-            Ok(p) => p as *mut u64,
-            Err(_) => {
-                println!(
-                    "Bump Allocator: Failed after allocating {} u64s.",
-                    allocations.len()
-                );
-                break;
-            }
-        };
+//         let ptr = match std::panic::catch_unwind(|| allocator.allocate(allocation_size, align)) {
+//             Ok(p) => p as *mut u64,
+//             Err(_) => {
+//                 println!(
+//                     "Bump Allocator: Failed after allocating {} u64s.",
+//                     allocations.len()
+//                 );
+//                 break;
+//             }
+//         };
 
-        unsafe {
-            ptr::write(ptr, allocations.len() as u64);
-        }
-        allocations.push(ptr);
-    }
+//         unsafe {
+//             ptr::write(ptr, allocations.len() as u64);
+//         }
+//         allocations.push(ptr);
+//     }
 
-    let duration = start.elapsed();
-    println!(
-        "Bump Allocator: Allocated {} u64s in {:?}",
-        allocations.len(),
-        duration
-    );
+//     let duration = start.elapsed();
+//     println!(
+//         "Bump Allocator: Allocated {} u64s in {:?}",
+//         allocations.len(),
+//         duration
+//     );
 
-    // No reset performed here as we are stressing the allocator
+//     // No reset performed here as we are stressing the allocator
 
-    // Standard Allocator
-    let mut std_allocations: Vec<*mut u64> = Vec::new();
-    let start = Instant::now();
+//     // Standard Allocator
+//     let mut std_allocations: Vec<*mut u64> = Vec::new();
+//     let start = Instant::now();
 
-    println!("Starting stress test for Standard Allocator...");
+//     println!("Starting stress test for Standard Allocator...");
 
-    loop {
-        if std_allocations.len() % 100_000 == 0 && std_allocations.len() != 0 {
-            println!(
-                "Standard Allocator: Allocated {} u64s so far...",
-                std_allocations.len()
-            );
-        }
+//     loop {
+//         if std_allocations.len() % 100_000 == 0 && std_allocations.len() != 0 {
+//             println!(
+//                 "Standard Allocator: Allocated {} u64s so far...",
+//                 std_allocations.len()
+//             );
+//         }
 
-        // Attempt to allocate; handle out-of-memory gracefully
-        let boxed = Box::try_new(0u64);
-        match boxed {
-            Ok(b) => std_allocations.push(Box::into_raw(b)),
-            Err(_) => {
-                println!(
-                    "Standard Allocator: Failed after allocating {} u64s.",
-                    std_allocations.len()
-                );
-                break;
-            }
-        }
-    }
+//         // Attempt to allocate; handle out-of-memory gracefully
+//         let boxed = Box::try_new(0u64);
+//         match boxed {
+//             Ok(b) => std_allocations.push(Box::into_raw(b)),
+//             Err(_) => {
+//                 println!(
+//                     "Standard Allocator: Failed after allocating {} u64s.",
+//                     std_allocations.len()
+//                 );
+//                 break;
+//             }
+//         }
+//     }
 
-    let duration = start.elapsed();
-    println!(
-        "Standard Allocator: Allocated {} u64s in {:?}",
-        std_allocations.len(),
-        duration
-    );
+//     let duration = start.elapsed();
+//     println!(
+//         "Standard Allocator: Allocated {} u64s in {:?}",
+//         std_allocations.len(),
+//         duration
+//     );
 
-    // Cleanup
-    for ptr in std_allocations {
-        unsafe {
-            Box::from_raw(ptr);
-        }
-    }
+//     // Cleanup
+//     for ptr in std_allocations {
+//         unsafe {
+//             Box::from_raw(ptr);
+//         }
+//     }
 
-    println!("----------------------------------------");
-}
+//     println!("----------------------------------------");
+// }

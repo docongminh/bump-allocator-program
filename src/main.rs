@@ -1,24 +1,17 @@
-use std::{mem, ptr, time::Instant};
-
-use allocator::{measure_bump_allocator, measure_standard_allocator};
-
 pub mod allocator;
-pub mod multi_thread_allocator;
 pub mod measure_tests;
+pub mod multi_thread_allocator;
 
-const NUM_ALLOCATIONS: usize = 1_000_0000;
-const BUFFER_SIZE: usize = NUM_ALLOCATIONS * mem::size_of::<u64>() * 2;
+use measure_tests::{measure_allocation_and_reset_patterns, measure_varying_allocation_sizes};
 
 pub fn align_up(address: usize, align: usize) -> usize {
     (address + align - 1) & !(align - 1)
 }
 
 fn main() {
-    println!("Testing Bump Allocator...");
-    measure_bump_allocator();
+    // Measure varying allocation sizes
+    measure_varying_allocation_sizes();
 
-    println!("\nTesting Standard Allocator...");
-    measure_standard_allocator();
-
-
+    // Measure allocation and reset patterns
+    measure_allocation_and_reset_patterns();
 }

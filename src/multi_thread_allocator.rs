@@ -1,5 +1,4 @@
 use std::alloc::{alloc, dealloc, Layout};
-use std::cell::RefCell;
 use std::sync::Mutex;
 use std::{mem, usize};
 use crate::align_up;

@@ -3,7 +3,10 @@ use std::cell::RefCell;
 use std::time::Instant;
 use std::{mem, ptr, usize};
 
-use crate::{align_up, BUFFER_SIZE, NUM_ALLOCATIONS};
+const NUM_ALLOCATIONS: usize = 1_000_0000;
+const BUFFER_SIZE: usize = NUM_ALLOCATIONS * mem::size_of::<u64>() * 2;
+
+use crate::align_up;
 
 pub struct BumpAllocator {
     buffer: *mut u8,
@@ -98,4 +101,12 @@ pub fn measure_standard_allocator() {
             let _ = Box::from_raw(ptr);
         }
     }
+}
+
+pub fn run() {
+    println!("Measure Bump Allocator...");
+    measure_bump_allocator();
+
+    println!("\nMeasure Standard Allocator...");
+    measure_standard_allocator();
 }
