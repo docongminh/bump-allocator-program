@@ -1,9 +1,5 @@
 # Result experiment bump heap allocation
 
-run
-```bash
-cd measured && cargo run release
-```
 ## Varying allocation sizes
 ```rust
 U8
