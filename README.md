@@ -1,6 +1,5 @@
-# Experiment bump head allocation
+# Result experiment bump head allocation
 
-# Result
 ## Varying allocation sizes
 ```rust
 U8
@@ -48,3 +47,6 @@ Iteration 10 - Allocated 500000 u64s in 15.508875ms
 
 Total time for 10 iterations: 157.383958ms
 ```
+
+# TODO
+- result test multi thread
