@@ -1,7 +1,8 @@
 [workspace]
 members = [
     "programs/*",
-    "measured"
+    "tests",
+    "rust-native"
 ]
 resolver = "2"
 
@@ -13,3 +14,9 @@ codegen-units = 1
 opt-level = 3
 incremental = false
 codegen-units = 1
+
+[workspace.dependencies]
+anchor-lang = "0.30.1"
+solana-program = { version = "1.18.21" }
+solana-program-test = { version = "1.18.21" }
+anchor-client = "0.30.1"

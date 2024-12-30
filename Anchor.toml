@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-bump_allocator = "4yFEwEPobbrFnnNuxo56jRz7qjzF7yGaD16VLdkxA5yq"
+allocator = "4yFEwEPobbrFnnNuxo56jRz7qjzF7yGaD16VLdkxA5yq"
 
 [registry]
 url = "https://api.apr.dev"
