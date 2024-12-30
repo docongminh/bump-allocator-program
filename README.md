@@ -1,4 +1,4 @@
-# Result experiment bump head allocation
+# Result experiment bump heap allocation
 
 ## Varying allocation sizes
 ```rust
