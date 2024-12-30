@@ -4,13 +4,13 @@ use std::sync::Mutex;
 use std::{mem, usize};
 use crate::align_up;
 
-pub struct SafeThreadBumpAllocator {
+pub struct ThreadSafeBumpAllocator {
     buffer: *mut u8,
     capacity: usize,
     offset: Mutex<usize>,
 }
 
-impl SafeThreadBumpAllocator {
+impl ThreadSafeBumpAllocator {
     pub fn new(capacity: usize) -> Self {
         let layout =
             Layout::from_size_align(capacity, mem::align_of::<usize>()).expect("Invalid layout");
@@ -19,7 +19,7 @@ impl SafeThreadBumpAllocator {
             panic!("failed to allocate buffer for PumpAllocator");
         }
 
-        SafeThreadBumpAllocator {
+        ThreadSafeBumpAllocator {
             buffer,
             capacity,
             offset: Mutex::new(0),
@@ -47,7 +47,7 @@ impl SafeThreadBumpAllocator {
     }
 }
 
-impl Drop for SafeThreadBumpAllocator {
+impl Drop for ThreadSafeBumpAllocator {
     fn drop(&mut self) {
         let layout = Layout::from_size_align(self.capacity, mem::align_of::<usize>())
             .expect("Invalid layout");

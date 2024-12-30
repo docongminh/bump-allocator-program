@@ -1,10 +1,10 @@
 use std::alloc::{alloc, dealloc, Layout};
 use std::cell::RefCell;
-use std::{mem, usize};
+use std::time::Instant;
+use std::{mem, ptr, usize};
 
-fn align_up(address: usize, align: usize) -> usize {
-    (address + align - 1) & !(align - 1)
-}
+use crate::{align_up, BUFFER_SIZE, NUM_ALLOCATIONS};
+
 pub struct BumpAllocator {
     buffer: *mut u8,
     capacity: usize,
@@ -54,6 +54,48 @@ impl Drop for BumpAllocator {
             .expect("Invalid layout");
         unsafe {
             dealloc(self.buffer, layout);
+        }
+    }
+}
+
+pub fn measure_bump_allocator() {
+    let allocator = BumpAllocator::new(BUFFER_SIZE);
+    let mut allocations: Vec<*mut u64> = Vec::with_capacity(NUM_ALLOCATIONS);
+    let start = Instant::now();
+    for i in 0..NUM_ALLOCATIONS {
+        let pointer = allocator.allocate(mem::size_of::<u64>(), mem::size_of::<u64>()) as *mut u64;
+        unsafe {
+            ptr::write(pointer as *mut u64, i as u64);
+        }
+        allocations.push(pointer);
+    }
+    let duration = start.elapsed();
+
+    println!(
+        "Bump Allocator: Allocated {} u64 in {:?}",
+        NUM_ALLOCATIONS, duration
+    );
+}
+
+pub fn measure_standard_allocator() {
+    let mut allocations: Vec<*mut u64> = Vec::with_capacity(NUM_ALLOCATIONS);
+
+    let start = Instant::now();
+    for i in 0..NUM_ALLOCATIONS {
+        let boxed = Box::new(i as u64);
+        allocations.push(Box::into_raw(boxed));
+    }
+
+    let duration = start.elapsed();
+    println!(
+        "Standard Allocator: Allocated {} u64 in {:?}",
+        NUM_ALLOCATIONS, duration
+    );
+
+    // clean up
+    for ptr in allocations {
+        unsafe {
+            let _ = Box::from_raw(ptr);
         }
     }
 }
