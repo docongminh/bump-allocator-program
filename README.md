@@ -26,3 +26,8 @@ Allocate 1024 bytes consumed 1200 compute units
 Allocate 10240 bytes consumed 1600 compute units
 Allocate 102400 bytes consumed 2000 compute units
 ```
+
+Note: Sometime by miss-match version, build by command:
+```bash
+RUSTUP_TOOLCHAIN="nightly-2024-11-19" anchor build
+```
