@@ -1,4 +1,4 @@
-# Measure bump heap allocation
+# Exp: Optimizing bump heap allocation
 **Purpose:** An experience for optimizing CU, increase the available heap memory for CPI calls between programs
 
 For rust native
