@@ -1,13 +1,21 @@
 use allocator;
 use anchor_client::anchor_lang::{InstructionData, ToAccountMetas};
+use anchor_client::solana_sdk::entrypoint::ProgramResult;
 use anchor_client::solana_sdk::instruction::Instruction;
 use anchor_client::solana_sdk::transaction::Transaction;
 use anchor_client::solana_sdk::{signature::Keypair, signer::Signer};
+use anchor_lang::prelude::{AccountInfo, Pubkey};
 use solana_program_test::*;
+
+fn entry(program_id: &Pubkey, accounts: &[AccountInfo], instruction_data: &[u8]) -> ProgramResult {
+	let accounts = Box::leak(Box::new(accounts.to_vec()));
+	allocator::entry(program_id, accounts, instruction_data)
+}
+
 
 #[tokio::test]
 pub async fn test_heap_allocate() {
-    let program_test = ProgramTest::new("allocator", allocator::ID, processor!(allocator::entry));
+    let program_test = ProgramTest::new("allocator", allocator::ID, processor!(entry));
 
     let (mut banks_client, payer, _) = program_test.start().await;
 
@@ -23,7 +31,7 @@ pub async fn test_heap_allocate() {
 
 #[tokio::test]
 async fn test_bump_allocate() {
-    let program_test = ProgramTest::new("allocator", allocator::ID, processor!(allocator::entry));
+    let program_test = ProgramTest::new("allocator", allocator::ID, processor!(entry));
 
     let (mut banks_client, payer, _) = program_test.start().await;
 
@@ -53,7 +61,6 @@ pub async fn heap_allocate_test(banks_client: &mut BanksClient, payer: &Keypair,
     );
 
     let bank_tx_result = banks_client.simulate_transaction(tx).await.unwrap();
-
     // Extract compute units
     let compute_units = bank_tx_result.simulation_details.unwrap().units_consumed;
     println!(
